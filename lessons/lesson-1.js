@@ -31,7 +31,7 @@
 
 // Типы данных
 // 8
-// primitive: string, number, boolean, bugInt, symbol, null, undefined
+// primitive: string, number, boolean, bigInt, symbol, null, undefined
 // object
 // let num = 10;
 // let num2 = num;
