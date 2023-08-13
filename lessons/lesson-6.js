@@ -1,51 +1,98 @@
-// this
+// this - контекст вызова функции
+// ссылка на объект, к свойствам которого мы можем
+// получить доступ внутри вызова функции
 
 // 'use strict'
 
 // 1. Global Scope
 // 2. Inside functions (not arrow functions)
+//    -- вызвана с помощью ключевого слова new --> this === {}
+//    -- с помощью методов call apply bind
+//    -- вызывается от имени объекта ---> this === то что слева от точки
+//    -- simple call ===> this === undefined ( !use strict === window )
 // 3. Arrow functions
 
 // =================== GLOBAL SCOPE ============================================
-
+// console.log(this) // (browser - window, nodejs - {})
+// this.age = 25
+// console.log(this.age) // 25
+// console.log(this)
 // =============== INSIDE FUNCTIONS ============================================
 
 function foo() {
     console.log(this)
 }
 
-// foo()
+// foo() // global / window / undefined
 
-const user = {
-    name: 'John',
-    age: 30,
-    greeting() {
-        console.log(`Hello, my name is ${user.name}!`)
-    }
-}
-// user.greeting()
-
-const userTwo = {
-    name: 'Kate',
-    age: 25,
-    greeting: user.greeting
-}
+// Объекты
+// const user = {
+//     name: 'John',
+//     age: 30,
+//     greeting() {
+//         console.log(`Hello, my name is ${user.name}!`)
+//     }
+// }
+// user.greeting() // Hello, my name is John
+//
+// const userTwo = {
+//     name: 'Kate',
+//     age: 25,
+//     greeting: user.greeting
+// }
 // Что выведет в консоль?
-// userTwo.greeting()
+// userTwo.greeting() // Hello, my name is John
 
 // Метод объекта
+// const user = {
+//     name: 'John',
+//     age: 30,
+//     greeting() {
+//         console.log(`Hello, my name is ${this.name}!`)
+//     }
+// }
+// user.greeting() // Hello, my name is John
+//
+// const userTwo = {
+//     name: 'Kate',
+//     age: 25,
+//     greeting: user.greeting
+// }
+//
+// userTwo.greeting() // Hello, my name is Kate!
 
 // Создайте объект planet с методом для представления планеты и её диаметра.
 // Используйте метод объекта в контексте этого объекта.
+// const planet = {
+//     name: 'Earth',
+//     diameter: 12742,
+//     describe() {
+//         console.log(`Planet ${this.name}, diameter ${this.diameter}`)
+//     }
+// }
 // planet.describe() // Planet Earth, diameter 12742 km
 
 // Создайте объект currencyConverter с методами для перевода валют
 // Добавьте свойства dollarsRate и euroRate для хранения курсов обмена
+// const currencyConverter = {
+//     dollarsRate: 100,
+//     euroRate: 110,
+//     toRubles(amount, currency) {
+//         if(currency === 'dollars') {
+//             return amount * this.dollarsRate
+//         } else if(currency === 'euros') {
+//             return amount * this.euroRate
+//         } else {
+//             console.log('Incorrect currency')
+//         }
+//     }
+// }
 // console.log(currencyConverter.toRubles(100, 'dollars')) // 10000
 // console.log(currencyConverter.toRubles(200, 'euros')) // 22000
 
 // DOM
 // Что выведется в консоль?
+// this = currentTarget
 // btn.addEventListener('click', foo)
 
 // =============== CALL APPLY BIND =============================================
@@ -56,20 +103,29 @@ const person = {
         return currentYear - this.birthYear
     }
 }
-// const getPersonAge = person.getAge
-// console.log(getPersonAge(2023))
+const getPersonAge = person.getAge.bind(person, 2023) // потеря контекста
+// console.log(getPersonAge()) // 27
 
-// const person2 = {
-//     name: 'Michael Smith',
-//     birthYear: 2001,
-// }
+const person_2 = {
+    name: 'Michael Smith',
+    birthYear: 2001,
+}
 
-// console.log(person.getAge.call(person2, 2023))
-// console.log(person.getAge.apply(person2, [ 2023 ]))
+// console.log(person.getAge.call(person_2, 2023)) // 22
+// console.log(person.getAge.apply(person_2, [ 2023 ])) // 22
 
 // Создайте объект "timer" с методом для вывода текущего времени currentTime.
 // Используйте метод `bind` для создания функции, которая будет выводить время.
-// const printTime = timer.currentTime.bind(timer)
+const timer = {
+    region: 'Siberia',
+    currentTime() {
+        const now = new Date()
+        console.log(
+            `Current time in ${this.region}: ${now.toLocaleTimeString()}`)
+    }
+}
+
+const printTime = timer.currentTime.bind(timer)
 // printTime(); // Current time: 13:00:00 PM
 
 const character = {
@@ -80,14 +136,22 @@ const character = {
 }
 
 const anotherCharacter = {
-    name: 'Alice'
+    name: 'Alice',
+    introduce: character.introduce
 }
 
+// anotherCharacter.introduce()
+// character.introduce.call(anotherCharacter)
 // Что нужно написать, чтобы в консоли было `My name is Alice`?
 
 // Создайте объект mathCalculator с методом для вычисления
 // абсолютной разницы absoluteDifference между двумя числами.
-// Используйте метод `apply` для передачи двух аргументов.
+// Используйте метод `apply` для передачи двух аргументов
+// const mathCalculator = {
+//     absoluteDifference(a, b) {
+//         console.log(Math.abs(a - b))
+//     }
+// }
 // mathCalculator.absoluteDifference.apply(null, [ 15, 8 ]) // 7
 
 const calculator = {
@@ -98,8 +162,8 @@ const calculator = {
     }
 }
 // Что будет выведено в консоль?
-// const half = calculator.double.call(calculator)
-// half()
+// const half = calculator.double.call(calculator) // undefined
+// half() // half is not a function
 
 // =================== ARROW FUNCTIONS =========================================
 const foo2 = () => {
@@ -118,19 +182,20 @@ const person2 = {
     }
 }
 // Что выведется в консоль?
-// console.log(person.getAge(2023))
-// console.log(person.getName())
+// console.log(person2.getAge(2023)) // 27
+// console.log(person2.getName()) // '' / undefined
+// console.log(this)
 
 const obj = {
     a: 1,
     b: 2,
     print() {
-        setTimeout(function () {
+        setTimeout(() => {
             console.log(this)
         })
     }
 }
-// obj.print()
+// obj.print() //
 
 const obj2 = {
     value: 42,
@@ -139,7 +204,7 @@ const obj2 = {
     }
 }
 // Что будет выведено в консоль?
-// obj2.getValue()
+// obj2.getValue() // undefined
 
 const user3 = {
     name: 'Igor',
@@ -158,24 +223,28 @@ const user4 = {
     }
 }
 // Что будет выведено в консоль?
-// btn.addEventListener('click', user3.tic)
-// btn.addEventListener('click', user4.tic)
+// btn.addEventListener('click', user3.tic) // window
+// btn.addEventListener('click', () => {
+//     setTimeout(() => {
+//         console.log(this)
+//     }, 1500)
+// }) // button
 
 const john = {
     age: 53,
     showAge() {
-        console.log(this.age);
+        console.log(this.age)
     },
 }
 // Что будет выведено в консоль?
-// setTimeout(john.showAge, 300)
-// setTimeout(john.showAge.bind(john), 300)
-// setTimeout( () => john.showAge(), 300)
+// setTimeout(john.showAge, 300) // undefined
+// setTimeout(john.showAge.bind(john), 300) // 53
+// setTimeout(() => john.showAge(), 300) // 53
 
 const user2 = {
     age: 21,
     showAge() {
-        const bar = () => {
+        function bar() {
             console.log(this.age)
         }
 
@@ -183,7 +252,8 @@ const user2 = {
     }
 }
 // Что будет выведено в консоль?
-// user2.showAge.call({ age: 25 })
+// user2.showAge.call({ age: 25 }) // 18
+// user2.showAge.call(user2) // 18
 
 const student = {
     group: '52',
@@ -205,13 +275,14 @@ const student2 = {
     }
 }
 // Что будет выведено в консоль?
-// student.showGroupStudent()
-// student2.showGroupStudent()
+// student.showGroupStudent() // 52 John 52 Alex 52 Piter
+// student2.showGroupStudent() // 52 John 52 Alex 52 Piter
 
 // ================= KEYWORD NEW =================
-
-function Car(make, model, year) {
-    this.make = make
+// Функции-конструкторы для создания однотипных объектов
+function Car(made, model, year) {
+    // this = {}
+    this.made = made
     this.model = model
     this.year = year
 
@@ -224,24 +295,47 @@ function Car(make, model, year) {
     this.drive = function () {
         console.log('The car is in motion.')
     }
+    // return this
 }
+
+// const bmw = new Car('BMW', 'M5', 2016)
+// console.log(bmw)
+// bmw.drive()
 
 // Что будет выведено в консоль?
 // const lada = Car('Lada', 'Vesta', 2023)
-// console.log(lada)
-// lada.drive()
+// console.log(lada) // undefined
+// lada.drive() //  Cannot read properties of undefined
 
 // Создайте функцию-конструктор для объектов Book
 // У каждой книги должны быть свойства title и author
 // Добавьте метод showInfo, который выводит информацию о книге
+function Book(title, author) {
+    this.title = title
+    this.author = author
+    this.showInfo = function () {
+        console.log(`Book: ${this.title}, Author: ${this.author}`)
+    }
+}
 
 // const book1 = new Book('Война и мир', 'Лев Толстой')
 // const book2 = new Book('Преступление и наказание', 'Фёдор Достоевский')
 // book1.showInfo() // Book: Война и мир, Author: Лев Толстой
 // book2.showInfo() // Book: Преступление и наказание, Author: Фёдор Достоевский
 
-// Создайте функцию-конструктор Counter, который будет иметь методы для увеличения и уменьшения значения счетчика.
+// Создайте функцию-конструктор Counter, который будет иметь методы для
+// увеличения и уменьшения значения счетчика.
 // Используйте ключевое слово this для доступа к текущему значению счетчика.
+
+function Counter() {
+    this.value = 0
+    this.increment = function () {
+        this.value++
+    }
+    this.decrement = function () {
+        this.value--
+    }
+}
 
 // const counter = new Counter()
 // counter.increment()
@@ -252,29 +346,40 @@ function Car(make, model, year) {
 // Создайте функцию-конструктор Calculator с методами subtract и multiply.
 // Создайте функции subtractFive и multiplyByTwo а основе этих методов
 
-// const calculator = new Calculator()
-// const subtractFive = calculator.subtract.bind(calculator, 5)
-// const multiplyByTwo = calculator.multiply.bind(calculator, 2)
+function Calculator() {
+    this.subtract = function (a, b) {
+        console.log(a - b)
+    }
+    this.multiply = function (a, b) {
+        console.log(a * b)
+    }
+}
+
+// const calculator2 = new Calculator()
+// const subtractFive = calculator2.subtract.bind(calculator2, 5)
+// const multiplyByTwo = calculator2.multiply.bind(calculator2, 2)
 // subtractFive(10) // -5
 // multiplyByTwo(8) // 16
 
+////////////////////////////////////////////////////////////////////////////////
 function bar() {
-  console.log(this)
+    console.log(this)
 }
 
 const alex = {
-  age: 24,
-  showAge: bar
+    age: 24,
+    showAge: bar
 }
+
 // Что будет выведено в консоль?
-// alex.showAge()
-// alex.showAge.bind({ one: 1 })()
+alex.showAge() // alex
+alex.showAge.bind({ one: 1 })() // { one: 1 }
 
 function Car2() {
-  console.log(this)
+    console.log(this)
 }
 
 // Что будет выведено в консоль?
-// new (Car2.bind({ two: 2 }))()
+new (Car2.bind({ two: 2 }))() // {}
 
 
