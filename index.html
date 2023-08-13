@@ -4,7 +4,41 @@
     <meta charset="UTF-8">
     <title>Samurai Will Help</title>
 </head>
+<style>
+    * {
+        margin: 0;
+    }
+
+    body {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #btn {
+        display: block;
+        padding: 15px 30px;
+        font-size: 50px;
+        color: white;
+        cursor: pointer;
+        background-color: royalblue;
+        border: none;
+        border-radius: 10px;
+        transition: all 0.2s ease-in-out;
+    }
+
+    #btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    #btn:active {
+        transform: translateY(2px);
+    }
+</style>
 <body>
-    <script src="lessons/lesson-5.js"></script>
+    <button id="btn">Click</button>
+    <script src="lessons/lesson-6.js"></script>
 </body>
 </html>
