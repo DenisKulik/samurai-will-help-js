@@ -5,15 +5,15 @@
 // 'use strict'
 
 // 1. Global Scope
-// 2. Inside functions (not arrow functions)
+// 2. Inside functions (not arrow functions) ---> global object (window - browser, nodejs - global)
 //    -- вызвана с помощью ключевого слова new --> this === {}
 //    -- с помощью методов call apply bind
 //    -- вызывается от имени объекта ---> this === то что слева от точки
 //    -- simple call ===> this === undefined ( !use strict === window )
-// 3. Arrow functions
+// 3. Arrow functions ---> this берётся из внешнего scope
 
 // =================== GLOBAL SCOPE ============================================
-// console.log(this) // (browser - window, nodejs - {})
+// console.log(this) // (browser - window, nodejs - global)
 // this.age = 25
 // console.log(this.age) // 25
 // console.log(this)
